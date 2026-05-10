@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Traveloop - Personalized Travel Planning Made Easy"/>
+    <title>Traveloop</title>
+    <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<div class="app-shell" id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">✈️</div>
+            <span class="sidebar-brand">Traveloop</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Main</div>
+            <div class="nav-item active" data-page="dashboard"><span class="nav-icon">🏠</span>Dashboard</div>
+            <div class="nav-item" data-page="my-trips"><span class="nav-icon">🧳</span>My Trips</div>
+            <div class="nav-item" data-page="create-trip"><span class="nav-icon">➕</span>Create Trip</div>
+            <div class="nav-section-label">Planning</div>
+            <div class="nav-item" data-page="itinerary"><span class="nav-icon">📋</span>Itinerary Builder</div>
+            <div class="nav-item" data-page="city-search"><span class="nav-icon">🔍</span>City Search</div>
+            <div class="nav-item" data-page="activities"><span class="nav-icon">🎯</span>Activities</div>
+            <div class="nav-section-label">Tools</div>
+            <div class="nav-item" data-page="budget"><span class="nav-icon">💰</span>Budget</div>
+            <div class="nav-item" data-page="packing"><span class="nav-icon">🎒</span>Packing List</div>
+            <div class="nav-item" data-page="notes"><span class="nav-icon">📝</span>Trip Notes</div>
+            <div class="nav-section-label">Account</div>
+            <div class="nav-item" data-page="profile"><span class="nav-icon">👤</span>Profile</div>
+            <div class="nav-item" data-page="shared"><span class="nav-icon">🔗</span>Shared Trips</div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile" data-page="profile">
+                <div class="user-avatar">AT</div>
+                <div class="user-info">
+                    <div class="user-name">Alex Traveler</div>
+                    <div class="user-email">alex@traveloop.com</div>
+                </div>
+            </div>
+            <div style="margin-top:0.5rem">
+                <button class="btn btn-ghost btn-sm w-full" style="color:rgba(255,255,255,0.5);justify-content:flex-start;padding-left:0.6rem" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content" id="main-content">
+        <header class="page-header" id="page-header">
+            <div>
+                <button class="mobile-menu-btn" id="menu-btn">☰</button>
+                <h1 class="page-title" id="page-title">Dashboard</h1>
+                <p class="page-subtitle" id="page-subtitle">Welcome back, Alex! Here's your travel overview.</p>
+            </div>
+            <div class="flex gap-1 items-center">
+                <div class="search-bar" style="width:260px">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search destinations..." id="global-search"/>
+                </div>
+                <button class="btn btn-accent btn-sm" onclick="navigateTo('create-trip')">+ New Trip</button>
+            </div>
+        </header>
+        <div class="page-body" id="page-body"></div>
+    </main>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Modal overlay -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal-content"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="pages.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
