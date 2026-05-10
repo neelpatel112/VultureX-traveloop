@@ -2,7 +2,9 @@
 
 > **Odoo × Parul University Hackathon — Problem Statement: Travel Loop**  
 > Built by **Team VultureX**
-
+---
+![login page](login.png)
+---
 A fully offline-capable, single-file travel planning web app built with **React 19 + TypeScript + Zustand**. Plan multi-city trips, manage itineraries, track budgets, and share your adventures — all persisted locally in the browser with no backend required.
 
 
@@ -38,7 +40,9 @@ A fully offline-capable, single-file travel planning web app built with **React 
 - All activities per stop with cost, duration, type, and location
 - Total trip cost aggregated from all activities
 - Navigate directly to any stop's activity list
-
+---
+![city search](search.png)
+---
 ### 🌍 City Search
 - Browse **16 curated global destinations** with descriptions, highlights, daily budget ranges, and ratings
 - Filter by continent: Europe / Asia / Americas / Oceania / Africa
@@ -52,7 +56,9 @@ A fully offline-capable, single-file travel planning web app built with **React 
 - Filter by max cost with a live slider
 - Search by activity name or city
 - Add activities directly to any stop in the current trip
-
+---
+![budget page](budget.png)
+---
 ### 💰 Budget Tracker
 - Set a total trip budget split across 5 categories: Transport, Accommodation, Activities, Meals, Other
 - Interactive **Pie Chart** (category breakdown) and **Bar Chart** (category vs. allocated) via Recharts
