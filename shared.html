@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shared Trip - Traveloop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, #0f0f1a 0%, #1a1035 50%, #0f0f1a 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    .header {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo { font-size: 1.4rem; font-weight: 700; color: #fff; }
+    .logo span { color: #ec4899; }
+    .cta-btn {
+      padding: 0.6rem 1.25rem;
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+    
+    .trip-hero {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding: 3rem 1rem;
+    }
+    .trip-hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .trip-hero .meta { color: #94a3b8; font-size: 0.95rem; }
+    .trip-hero .meta span { margin: 0 0.5rem; }
+    
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .stat-box .val { font-size: 1.8rem; font-weight: 700; color: #6366f1; }
+    .stat-box .lbl { font-size: 0.8rem; color: #94a3b8; margin-top: 0.3rem; }
+    
+    .stop-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .stop-header {
+      padding: 1.25rem 1.5rem;
+      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(236,72,153,0.1));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stop-header h3 { font-size: 1.1rem; font-weight: 700; }
+    .stop-header .dates { font-size: 0.82rem; color: #94a3b8; }
+    .visited-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .visited-yes { background: rgba(16,185,129,0.15); color: #10b981; }
+    .visited-no { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    
+    .activity-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .activity-row:last-child { border-bottom: none; }
+    .act-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(99,102,241,0.15);
+      color: #6366f1;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.8rem;
+    }
+    .act-info { flex: 1; }
+    .act-info .name { font-weight: 600; font-size: 0.9rem; }
+    .act-info .type { font-size: 0.78rem; color: #94a3b8; }
+    .act-cost { font-weight: 600; color: #6366f1; }
+    
+    .empty { padding: 2rem; text-align: center; color: #64748b; }
+    .error-page { text-align: center; padding: 5rem 1rem; }
+    .error-page h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .error-page p { color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">✈️ Travel<span>oop</span></div>
+    <a href="/" class="cta-btn">Start Planning Your Trip →</a>
+  </div>
+
+  <div class="container" id="content">
+    <div style="text-align:center;padding:4rem;color:#94a3b8">Loading trip details...</div>
+  </div>
+
+  <script>
+    const tripId = window.location.pathname.split('/shared/')[1];
+    
+    async function loadTrip() {
+      if (!tripId) { showError(); return; }
+      try {
+        const res = await fetch('/api/shared/trip/' + tripId);
+        if (!res.ok) { showError(); return; }
+        const trip = await res.json();
+        renderTrip(trip);
+      } catch (e) {
+        showError();
+      }
+    }
+    
+    function showError() {
+      document.getElementById('content').innerHTML = `
+        <div class="error-page">
+          <h2>Trip Not Found</h2>
+          <p>This shared trip link may be invalid or the trip may have been deleted.</p>
+          <a href="/" class="cta-btn" style="display:inline-block;margin-top:1.5rem;text-decoration:none">Go to Traveloop</a>
+        </div>
+      `;
+    }
+    
+    function renderTrip(trip) {
+      const stops = trip.stops || [];
+      const totalActivities = stops.reduce((s, st) => s + (st.activities || []).length, 0);
+      const visitedCount = stops.filter(s => s.visited).length;
+      
+      let html = `
+        <div class="trip-hero">
+          <h1>${trip.name}</h1>
+          <div class="meta">
+            <span>Planned by <strong>${trip.owner_name}</strong></span>
+            <span>·</span>
+            <span>${trip.start_date || 'Flexible dates'}</span>
+          </div>
+        </div>
+        
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="val">${stops.length}</div>
+            <div class="lbl">Destinations</div>
+          </div>
+          <div class="stat-box">
+            <div class="val">${totalActivities}</div>
+            <div class="lbl">Activities Planned</div>
+          </div>
+          <div class="stat-box">
+            <div class="val">${visitedCount}/${stops.length}</div>
+            <div class="lbl">Places Visited</div>
+          </div>
+        </div>
+      `;
+      
+      if (stops.length === 0) {
+        html += '<div class="empty">No stops planned yet for this trip.</div>';
+      } else {
+        stops.forEach(s => {
+          html += `
+            <div class="stop-card">
+              <div class="stop-header">
+                <div>
+                  <h3>📍 ${s.city}</h3>
+                  <div class="dates">${s.start_date || ''} ${s.end_date ? '→ ' + s.end_date : ''}</div>
+                </div>
+                <span class="visited-badge ${s.visited ? 'visited-yes' : 'visited-no'}">${s.visited ? '✓ Visited' : 'Planned'}</span>
+              </div>
+              ${(s.activities || []).length > 0 ? s.activities.map((a, i) => `
+                <div class="activity-row">
+                  <div class="act-num">${i + 1}</div>
+                  <div class="act-info">
+                    <div class="name">${a.name}</div>
+                    <div class="type">${a.type} · ${a.duration}</div>
+                  </div>
+                  <div class="act-cost">${a.cost > 0 ? '$' + a.cost : 'Free'}</div>
+                </div>
+              `).join('') : '<div class="empty">No activities planned</div>'}
+            </div>
+          `;
+        });
+      }
+      
+      document.getElementById('content').innerHTML = html;
+      document.title = trip.name + ' - Shared Trip | Traveloop';
+    }
+    
+    loadTrip();
+  </script>
+</body>
+</html>

@@ -9,28 +9,31 @@
 </head>
 <body>
 <div class="app-shell" id="app">
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">✈️</div>
+            <img src="icons/logo.png" style="width:36px;height:36px;border-radius:8px" alt="Traveloop"/>
             <span class="sidebar-brand">Traveloop</span>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section-label">Main</div>
-            <div class="nav-item active" data-page="dashboard"><span class="nav-icon">🏠</span>Dashboard</div>
-            <div class="nav-item" data-page="my-trips"><span class="nav-icon">🧳</span>My Trips</div>
+            <div class="nav-item active" data-page="dashboard"><span class="nav-icon"><img src="icons/dashboard.png" style="width:20px;height:20px"/></span>Dashboard</div>
+            <div class="nav-item" data-page="my-trips"><span class="nav-icon"><img src="icons/travel.png" style="width:20px;height:20px"/></span>My Trips</div>
             <div class="nav-item" data-page="create-trip"><span class="nav-icon">➕</span>Create Trip</div>
             <div class="nav-section-label">Planning</div>
-            <div class="nav-item" data-page="itinerary"><span class="nav-icon">📋</span>Itinerary Builder</div>
-            <div class="nav-item" data-page="city-search"><span class="nav-icon">🔍</span>City Search</div>
-            <div class="nav-item" data-page="activities"><span class="nav-icon">🎯</span>Activities</div>
+            <div class="nav-item" data-page="itinerary"><span class="nav-icon"><img src="icons/Itinerary Builder.png" style="width:20px;height:20px"/></span>Itinerary Builder</div>
+            <div class="nav-item" data-page="city-search"><span class="nav-icon"><img src="icons/City Search.png" style="width:20px;height:20px"/></span>City Search</div>
+            <div class="nav-item" data-page="activities"><span class="nav-icon"><img src="icons/Activities.png" style="width:20px;height:20px"/></span>Activities</div>
             <div class="nav-section-label">Tools</div>
-            <div class="nav-item" data-page="budget"><span class="nav-icon">💰</span>Budget</div>
-            <div class="nav-item" data-page="packing"><span class="nav-icon">🎒</span>Packing List</div>
-            <div class="nav-item" data-page="notes"><span class="nav-icon">📝</span>Trip Notes</div>
+            <div class="nav-item" data-page="budget"><span class="nav-icon"><img src="icons/Budget.png" style="width:20px;height:20px"/></span>Budget</div>
+            <div class="nav-item" data-page="packing"><span class="nav-icon"><img src="icons/Packing List.png" style="width:20px;height:20px"/></span>Packing List</div>
+            <div class="nav-item" data-page="notes"><span class="nav-icon"><img src="icons/Trip Notes.png" style="width:20px;height:20px"/></span>Trip Notes</div>
             <div class="nav-section-label">Account</div>
             <div class="nav-item" data-page="profile"><span class="nav-icon">👤</span>Profile</div>
-            <div class="nav-item" data-page="shared"><span class="nav-icon">🔗</span>Shared Trips</div>
+            <div class="nav-item" data-page="shared"><span class="nav-icon"><img src="icons/Shared Trips.png" style="width:20px;height:20px"/></span>Shared Trips</div>
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile" data-page="profile">
@@ -41,7 +44,7 @@
                 </div>
             </div>
             <div style="margin-top:0.5rem">
-                <button class="btn btn-ghost btn-sm w-full" style="color:rgba(255,255,255,0.5);justify-content:flex-start;padding-left:0.6rem" onclick="logout()">🚪 Logout</button>
+                <button class="btn btn-ghost btn-sm w-full" style="color:rgba(255,255,255,0.5);justify-content:flex-start;padding-left:0.6rem" onclick="logout()"><img src="icons/exit.png" style="width:16px;height:16px;margin-right:0.3rem"/> Logout</button>
             </div>
         </div>
     </aside>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Traveloop - Admin Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-dark: #0f0f1a;
+      --bg-card: #1a1a2e;
+      --bg-card-hover: #222240;
+      --border: #2a2a45;
+      --primary: #6366f1;
+      --primary-glow: rgba(99,102,241,0.15);
+      --accent-pink: #ec4899;
+      --accent-cyan: #22d3ee;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #16132d 0%, #1e1b4b 50%, #312e81 100%);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+    .sidebar-logo {
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-logo .logo-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent-pink), var(--primary));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .sidebar-logo span {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #fff;
+    }
+    .sidebar-nav {
+      flex: 1;
+      padding: 1.25rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sidebar-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.35);
+      padding: 0.75rem 1rem 0.3rem;
+      font-weight: 600;
+    }
+    .nav-btn {
+      padding: 0.7rem 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      color: rgba(255,255,255,0.6);
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .nav-btn.active { background: rgba(99,102,241,0.2); color: #fff; }
+    .nav-btn .icon { font-size: 1.1rem; width: 22px; text-align: center; }
+    .sidebar-footer {
+      padding: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-footer button {
+      width: 100%;
+      padding: 0.65rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.15);
+      background: none;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .sidebar-footer button:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    /* ── Main Content ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem 2.5rem;
+      background: var(--bg-dark);
+    }
+    .main::-webkit-scrollbar { width: 6px; }
+    .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .page-header h1 { font-size: 1.75rem; font-weight: 700; }
+    .page-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem; }
+
+    .section { display: none; }
+    .section.active { display: block; animation: fadeUp 0.35s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Stat Cards ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .stat-card:nth-child(1)::before { background: linear-gradient(90deg, var(--primary), var(--accent-cyan)); }
+    .stat-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent-pink), var(--accent-amber)); }
+    .stat-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan)); }
+    .stat-card:nth-child(4)::before { background: linear-gradient(90deg, var(--accent-amber), var(--accent-red)); }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 2rem; font-weight: 700; margin-top: 0.5rem; }
+    .stat-sub { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.4rem; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-header h3 { font-size: 1rem; font-weight: 600; }
+    .card-body { padding: 1.25rem 1.5rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+
+    /* ── Tables ── */
+    .tbl { width: 100%; border-collapse: collapse; }
+    .tbl th, .tbl td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+    .tbl th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); font-weight: 600; }
+    .tbl tr:hover td { background: var(--bg-card-hover); }
+    .tbl tr:last-child td { border-bottom: none; }
+
+    /* ── Badges ── */
+    .badge { display: inline-block; padding: 0.25rem 0.65rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600; }
+    .badge-primary { background: var(--primary-glow); color: var(--primary); }
+    .badge-pink { background: rgba(236,72,153,0.15); color: var(--accent-pink); }
+    .badge-green { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+    .badge-amber { background: rgba(245,158,11,0.15); color: var(--accent-amber); }
+    .badge-red { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+    .badge-cyan { background: rgba(34,211,238,0.15); color: var(--accent-cyan); }
+
+    /* ── Buttons ── */
+    .btn { padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-family: inherit; font-weight: 500; font-size: 0.85rem; cursor: pointer; border: none; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: #5558e6; }
+    .btn-outline { background: none; border: 1px solid var(--border); color: var(--text-main); }
+    .btn-outline:hover { background: var(--bg-card-hover); }
+    .btn-danger { background: none; border: 1px solid var(--accent-red); color: var(--accent-red); }
+    .btn-danger:hover { background: rgba(239,68,68,0.1); }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
+    .btn-icon { background: none; border: 1px solid var(--border); color: var(--text-muted); width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
+    .btn-icon:hover { background: var(--bg-card-hover); color: #fff; }
+
+    /* ── User detail modal ── */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { font-weight: 700; }
+    .modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+    .modal-body { padding: 1.5rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🛡️</div>
+      <span>Admin Center</span>
+    </div>
+    <div class="sidebar-nav">
+      <div class="sidebar-label">Analytics</div>
+      <button class="nav-btn active" onclick="switchTab('overview',this)">
+        <span class="icon">📊</span> Overview
+      </button>
+      <button class="nav-btn" onclick="switchTab('trips',this)">
+        <span class="icon">🗺️</span> Trip Analytics
+      </button>
+      <div class="sidebar-label">Management</div>
+      <button class="nav-btn" onclick="switchTab('users',this)">
+        <span class="icon">👥</span> User Management
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <button onclick="window.location.href='/app'">← Back to Traveloop</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ═══ OVERVIEW SECTION ═══ -->
+    <div id="sec-overview" class="section active">
+      <div class="page-header">
+        <div><h1>Platform Overview</h1><p>Real-time platform analytics and insights</p></div>
+        <button class="btn btn-primary" onclick="loadOverview()">↻ Refresh</button>
+      </div>
+      <div class="stats-grid" id="stats-grid"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><h3>City Popularity</h3></div>
+          <div class="card-body" style="height:300px;display:flex;align-items:center;justify-content:center">
+            <canvas id="cityChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Top Explored Cities</h3></div>
+          <div class="card-body" style="padding:0">
+            <table class="tbl">
+              <thead><tr><th>#</th><th>City</th><th>Visits</th><th>Share</th></tr></thead>
+              <tbody id="cities-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TRIPS SECTION ═══ -->
+    <div id="sec-trips" class="section">
+      <div class="page-header">
+        <div><h1>Trip Analytics</h1><p>Recent trips and popular activities across the platform</p></div>
+        <button class="btn btn-primary" onclick="loadTrips()">↻ Refresh</button>
+      </div>
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-header"><h3>Recent Trips Created</h3></div>
+        <div class="card-body" style="padding:0">
+          <table class="tbl">
+            <thead><tr><th>Trip Name</th><th>Created By</th><th>Budget</th><th>Stops</th><th>Start Date</th><th>Created</th></tr></thead>
+            <tbody id="trips-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Most Popular Activities</h3></div>
+        <div class="card-body" style="padding:0">
+          <table class="tbl">
+            <thead><tr><th>#</th><th>Activity</th><th>Type</th><th>Usage Count</th></tr></thead>
+            <tbody id="activities-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ USERS SECTION ═══ -->
+    <div id="sec-users" class="section">
+      <div class="page-header">
+        <div><h1>User Management</h1><p>View, inspect, and manage platform users</p></div>
+        <button class="btn btn-primary" onclick="loadUsers()">↻ Refresh</button>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Trips</th>
+                <th>Joined</th>
+                <th style="text-align:right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- User Detail Modal -->
+  <div class="modal-overlay" id="user-modal" onclick="if(event.target===this)this.classList.remove('active')">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-user-title">User Details</h3>
+        <button class="modal-close" onclick="document.getElementById('user-modal').classList.remove('active')">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-user-body"></div>
+    </div>
+  </div>
+
+  <script>
+    let cityChartInstance = null;
+
+    function switchTab(id, btn) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('sec-' + id).classList.add('active');
+      if (id === 'overview') loadOverview();
+      if (id === 'trips') loadTrips();
+      if (id === 'users') loadUsers();
+    }
+
+    // ════════════════════════════════
+    // OVERVIEW
+    // ════════════════════════════════
+    async function loadOverview() {
+      try {
+        const res = await fetch('/api/admin/stats');
+        if (!res.ok) { if (res.status === 401) window.location.href = '/'; return; }
+        const d = await res.json();
+
+        const totalVisits = d.topCities.reduce((s, c) => s + parseInt(c.c), 0);
+
+        document.getElementById('stats-grid').innerHTML = `
+          <div class="stat-card">
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value" style="color:var(--primary)">${d.totalUsers}</div>
+            <div class="stat-sub">Registered accounts</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Trips</div>
+            <div class="stat-value" style="color:var(--accent-pink)">${d.totalTrips}</div>
+            <div class="stat-sub">Trips created platform-wide</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Cities Explored</div>
+            <div class="stat-value" style="color:var(--accent-green)">${totalVisits}</div>
+            <div class="stat-sub">Total city visits across all trips</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg Trips/User</div>
+            <div class="stat-value" style="color:var(--accent-amber)">${d.totalUsers > 0 ? (d.totalTrips / d.totalUsers).toFixed(1) : '0'}</div>
+            <div class="stat-sub">User engagement metric</div>
+          </div>
+        `;
+
+        // Cities table
+        const citiesHtml = d.topCities.map((c, i) => {
+          const pct = totalVisits > 0 ? ((parseInt(c.c) / totalVisits) * 100).toFixed(1) : 0;
+          const colors = ['badge-primary','badge-pink','badge-green','badge-amber','badge-cyan'];
+          return `<tr>
+            <td style="color:var(--text-dim)">${i+1}</td>
+            <td style="font-weight:600">📍 ${c.city}</td>
+            <td><span class="badge ${colors[i % colors.length]}">${c.c} visits</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:0.5rem">
+                <div style="flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden">
+                  <div style="height:100%;width:${pct}%;background:var(--primary);border-radius:99px"></div>
+                </div>
+                <span style="font-size:0.78rem;color:var(--text-dim);min-width:40px">${pct}%</span>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+        document.getElementById('cities-tbody').innerHTML = citiesHtml || '<tr><td colspan="4" style="text-align:center;color:var(--text-dim)">No data yet</td></tr>';
+
+        // City chart
+        const ctx = document.getElementById('cityChart').getContext('2d');
+        if (cityChartInstance) cityChartInstance.destroy();
+        const labels = d.topCities.map(c => c.city);
+        const data = d.topCities.map(c => parseInt(c.c));
+        const bgColors = ['#6366f1','#ec4899','#10b981','#f59e0b','#22d3ee','#8b5cf6','#ef4444'];
+        cityChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: labels.length ? labels : ['No Data'],
+            datasets: [{ data: data.length ? data : [1], backgroundColor: data.length ? bgColors.slice(0, data.length) : ['#2a2a45'], borderWidth: 0 }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 15, font: { family: 'Outfit' } } }
+            }
+          }
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    // ════════════════════════════════
+    // TRIPS
+    // ════════════════════════════════
+    async function loadTrips() {
+      try {
+        const [tripsRes, actsRes] = await Promise.all([
+          fetch('/api/admin/recent-trips'),
+          fetch('/api/admin/top-activities')
+        ]);
+        const trips = await tripsRes.json();
+        const acts = await actsRes.json();
+
+        document.getElementById('trips-tbody').innerHTML = trips.map(t => `
+          <tr>
+            <td style="font-weight:600">${t.name}</td>
+            <td><span style="color:var(--text-muted)">${t.user_name}</span><br><span style="font-size:0.75rem;color:var(--text-dim)">${t.user_email}</span></td>
+            <td>${t.budget ? '$' + t.budget : '—'}</td>
+            <td><span class="badge badge-primary">${t.stops_count} stops</span></td>
+            <td style="color:var(--text-muted)">${t.start_date || '—'}</td>
+            <td style="color:var(--text-dim);font-size:0.82rem">${new Date(t.created_at).toLocaleDateString()}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-dim);padding:2rem">No trips yet</td></tr>';
+
+        const typeIcons = { Sightseeing:'🏛️', Food:'🍕', Tour:'🚌', Nature:'🌿', Adventure:'🧗', Entertainment:'🎭', Shopping:'🛍️', Relaxation:'🧘' };
+        document.getElementById('activities-tbody').innerHTML = acts.map((a, i) => `
+          <tr>
+            <td style="color:var(--text-dim)">${i+1}</td>
+            <td style="font-weight:600">${a.name}</td>
+            <td><span class="badge badge-green">${typeIcons[a.type]||'🎯'} ${a.type}</span></td>
+            <td><span class="badge badge-amber">${a.usage_count}x used</span></td>
+          </tr>
+        `).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:2rem">No activities yet</td></tr>';
+      } catch (e) { console.error(e); }
+    }
+
+    // ════════════════════════════════
+    // USERS
+    // ════════════════════════════════
+    async function loadUsers() {
+      try {
+        const res = await fetch('/api/admin/users');
+        const users = await res.json();
+        document.getElementById('users-tbody').innerHTML = users.map(u => `
+          <tr>
+            <td style="color:var(--text-dim)">#${u.id}</td>
+            <td style="font-weight:600">${u.name}</td>
+            <td style="color:var(--text-muted)">${u.email}</td>
+            <td><span class="badge ${parseInt(u.trips_count) > 0 ? 'badge-primary' : 'badge-red'}">${u.trips_count} trips</span></td>
+            <td style="color:var(--text-dim);font-size:0.82rem">${new Date(u.created_at).toLocaleDateString()}</td>
+            <td style="text-align:right;display:flex;gap:0.4rem;justify-content:flex-end">
+              <button class="btn-icon" title="View Details" onclick="viewUser(${u.id}, '${u.name.replace(/'/g,"\\'")}', '${u.email}')">👁️</button>
+              <button class="btn-icon" title="Delete User" style="border-color:var(--accent-red);color:var(--accent-red)" onclick="deleteUser(${u.id}, '${u.name.replace(/'/g,"\\'")}')">🗑️</button>
+            </td>
+          </tr>
+        `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-dim);padding:2rem">No users</td></tr>';
+      } catch (e) { console.error(e); }
+    }
+
+    async function viewUser(id, name, email) {
+      document.getElementById('modal-user-title').textContent = name + ' — Details';
+      document.getElementById('modal-user-body').innerHTML = '<p style="color:var(--text-muted)">Loading trips...</p>';
+      document.getElementById('user-modal').classList.add('active');
+      try {
+        const res = await fetch('/api/admin/users/' + id + '/trips');
+        const trips = await res.json();
+        let html = `
+          <div style="margin-bottom:1.25rem">
+            <div style="font-size:0.82rem;color:var(--text-dim)">Email</div>
+            <div style="font-weight:600">${email}</div>
+          </div>
+          <div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.5rem">Trips (${trips.length})</div>
+        `;
+        if (trips.length === 0) {
+          html += '<p style="color:var(--text-dim);padding:1rem 0">No trips created.</p>';
+        } else {
+          html += trips.map(t => `
+            <div style="background:var(--bg-dark);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-weight:600">${t.name}</span>
+                <span class="badge badge-primary">${t.stops_count} stops · ${t.activities_count} activities</span>
+              </div>
+              <div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.4rem">
+                Budget: ${t.budget ? '$'+t.budget : '—'} · ${t.start_date || 'No date set'}
+              </div>
+            </div>
+          `).join('');
+        }
+        document.getElementById('modal-user-body').innerHTML = html;
+      } catch (e) {
+        document.getElementById('modal-user-body').innerHTML = '<p style="color:var(--accent-red)">Failed to load user data.</p>';
+      }
+    }
+
+    async function deleteUser(id, name) {
+      if (!confirm(`⚠️ Permanently delete user "${name}" and ALL their data?\n\nThis cannot be undone.`)) return;
+      try {
+        const res = await fetch('/api/admin/users/' + id, { method: 'DELETE' });
+        if (!res.ok) { const e = await res.json(); alert(e.error || 'Failed'); return; }
+        loadUsers();
+        loadOverview();
+      } catch (e) { console.error(e); }
+    }
+
+    // Init
+    loadOverview();
+  </script>
+</body>
+</html>

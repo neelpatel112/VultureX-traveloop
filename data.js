@@ -8,7 +8,9 @@ const DATA = {
   notes: [],
   cities: [],
   catalogActivities: [],
-  stats: {}
+  stats: {},
+  adminStats: null,
+  currentLocation: null
 };
 
 const API = {
@@ -59,6 +61,35 @@ async function loadAllData() {
     DATA.catalogActivities = activities || [];
     DATA.stats = stats || {};
 
+    try {
+      const ipRes = await fetch('https://ipapi.co/json/');
+      if (ipRes.ok) {
+        DATA.currentLocation = await ipRes.json();
+        const curr = DATA.currentLocation.currency || 'USD';
+        try {
+          const exRes = await fetch('https://open.er-api.com/v6/latest/USD');
+          if (exRes.ok) {
+            const exData = await exRes.json();
+            DATA.exchangeRate = exData.rates[curr] || 1;
+          }
+        } catch (e) {}
+      }
+    } catch (e) {
+      console.warn('Could not get IP location', e);
+    }
+    
+    // Global formatCurrency helper (converts USD → local currency)
+    window.formatCurrency = function(usdAmount) {
+      const rate = DATA.exchangeRate || 1;
+      const curr = DATA.currentLocation?.currency || 'USD';
+      return new Intl.NumberFormat(DATA.currentLocation?.languages?.split(',')[0] || 'en-US', { style: 'currency', currency: curr, maximumFractionDigits: 0 }).format(usdAmount * rate);
+    };
+    // Format a value that is ALREADY in local currency (no conversion)
+    window.formatLocal = function(localAmount) {
+      const curr = DATA.currentLocation?.currency || 'USD';
+      return new Intl.NumberFormat(DATA.currentLocation?.languages?.split(',')[0] || 'en-US', { style: 'currency', currency: curr, maximumFractionDigits: 0 }).format(localAmount);
+    };
+
     // Update sidebar user info
     const nameEl = document.querySelector('.user-name');
     const emailEl = document.querySelector('.user-email');
@@ -85,4 +116,12 @@ async function refreshPacking() {
 
 async function refreshNotes() {
   DATA.notes = await API.get('/api/notes') || [];
+}
+
+async function refreshAdminStats() {
+  try {
+    DATA.adminStats = await API.get('/api/admin/stats');
+  } catch (e) {
+    console.error('Admin stats error:', e);
+  }
 }

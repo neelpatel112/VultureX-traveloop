@@ -32,6 +32,14 @@
       "dest": "/app.html"
     },
     {
+      "src": "/admin",
+      "dest": "/admin.html"
+    },
+    {
+      "src": "/shared/(.*)",
+      "dest": "/server.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "/$1"
     }
