@@ -38,7 +38,7 @@ A full-stack travel planning web app built with **Node.js + Express + PostgreSQL
 - All activities per stop with cost, duration, and type
 - Total trip cost aggregated from all activities
 ---
-[city search page](search.png)
+![search city page](search.png)
 ---
 ### 🌍 City Search
 - Browse a curated global city catalog (served from backend `/api/cities`)
